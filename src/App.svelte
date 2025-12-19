@@ -2,6 +2,32 @@
   import { tasks, addTask } from "./store/tasks.js";
   import { formatTime } from "./utils/time.js";
   import TaskList from "./components/TaskList.svelte";
+  import { onMount } from "svelte";
+
+  function getAuthCode() {
+    if (typeof my !== "undefined") {
+      my.getAuthCode({
+        scopes: ["auth_base"],
+        success: (res) => {
+          my.alert({
+            content: res.authCode,
+          });
+        },
+        fail: (res) => {
+          console.log(res.authErrorScopes);
+        },
+      });
+    } else {
+      console.warn("Global 'my' object not found. Auth code logic skipped.");
+      alert("Auth code logic skipped: 'my' object is undefined.");
+    }
+  }
+
+  onMount(() => {
+    if (typeof my !== "undefined") {
+      getAuthCode();
+    }
+  });
 
   let newTaskName = "";
 
@@ -28,6 +54,7 @@
       <span>Total Time:</span>
       <span class="time-display">{formatTime(totalTime)}</span>
     </div>
+    <button class="auth-btn" on:click={getAuthCode}>Get Auth Code</button>
   </header>
 
   <div class="add-task-section">
@@ -124,6 +151,21 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s;
+  }
+
+  .auth-btn {
+    padding: 8px 16px;
+    background-color: #673ab7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+
+  .auth-btn:hover {
+    background-color: #5e35b1;
   }
 
   .add-btn:hover:not(:disabled) {
