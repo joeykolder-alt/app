@@ -7,7 +7,7 @@
   function getAuthCode() {
     if (typeof my !== "undefined") {
       my.getAuthCode({
-        scopes: ["auth_base"],
+        scopes: ["auth_base", "USER_ID"],
         success: (res) => {
           my.alert({
             content: res.authCode,
