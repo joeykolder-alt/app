@@ -3,18 +3,29 @@
   import { formatTime } from "./utils/time.js";
   import TaskList from "./components/TaskList.svelte";
   import { onMount } from "svelte";
+  import { authWithSuperQi } from "./services/api.js";
 
   function getAuthCode() {
     if (typeof my !== "undefined") {
       my.getAuthCode({
         scopes: ["auth_base", "USER_ID"],
-        success: (res) => {
-          my.alert({
-            content: res.authCode,
-          });
+        success: async (res) => {
+          try {
+            const data = await authWithSuperQi(res.authCode);
+            my.alert({
+              content: "Auth Success: " + JSON.stringify(data),
+            });
+          } catch (error) {
+            my.alert({
+              content: "Auth Failed: " + error.message,
+            });
+          }
         },
         fail: (res) => {
           console.log(res.authErrorScopes);
+          my.alert({
+            content: "Auth Code Failed: " + JSON.stringify(res),
+          });
         },
       });
     } else {
