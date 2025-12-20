@@ -65,7 +65,7 @@
       <span>Total Time:</span>
       <span class="time-display">{formatTime(totalTime)}</span>
     </div>
-    <button class="auth-btn" on:click={getAuthCode}>Get Auth Code</button>
+    <button class="auth-btn" on:click={getAuthCode}>Login</button>
   </header>
 
   <div class="add-task-section">
