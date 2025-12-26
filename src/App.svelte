@@ -12,6 +12,7 @@
         success: async (res) => {
           try {
             const data = await authWithSuperQi(res.authCode);
+            token = data.token; // Store the token
             my.alert({
               content: "Auth Success: " + JSON.stringify(data),
             });
@@ -36,19 +37,34 @@
 
   function handlePayment() {
     if (typeof my !== "undefined") {
-      my.tradePay({
-        paymentUrl: "https://www.wallet.com/cashier?orderId=xxxxxxx", // get the redirectUrl from the server first
-        success: (res) => {
-          my.alert({
-            content: JSON.stringify(res),
-          });
+      fetch("https://its.mouamle.space/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
         },
-        fail: (res) => {
-          my.alert({
-            content: JSON.stringify(res),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          my.tradePay({
+            paymentUrl: data.url,
+            success: (res) => {
+              my.alert({
+                content: "Payment successful",
+              });
+            },
+            fail: (res) => {
+              my.alert({
+                content: JSON.stringify(res),
+              });
+            },
           });
-        },
-      });
+        })
+        .catch((err) => {
+          my.alert({
+            content: "Payment failed",
+          });
+        });
     } else {
       console.warn("Global 'my' object not found. Payment logic skipped.");
       alert("Payment logic skipped: 'my' object is undefined.");
@@ -62,6 +78,7 @@
   });
 
   let newTaskName = "";
+  let token = "";
 
   $: totalTime = $tasks.reduce((acc, task) => acc + task.time, 0);
 
