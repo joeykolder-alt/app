@@ -34,6 +34,27 @@
     }
   }
 
+  function handlePayment() {
+    if (typeof my !== "undefined") {
+      my.tradePay({
+        paymentUrl: "https://www.wallet.com/cashier?orderId=xxxxxxx", // get the redirectUrl from the server first
+        success: (res) => {
+          my.alert({
+            content: JSON.stringify(res),
+          });
+        },
+        fail: (res) => {
+          my.alert({
+            content: JSON.stringify(res),
+          });
+        },
+      });
+    } else {
+      console.warn("Global 'my' object not found. Payment logic skipped.");
+      alert("Payment logic skipped: 'my' object is undefined.");
+    }
+  }
+
   onMount(() => {
     if (typeof my !== "undefined") {
       getAuthCode();
@@ -66,6 +87,7 @@
       <span class="time-display">{formatTime(totalTime)}</span>
     </div>
     <button class="auth-btn" on:click={getAuthCode}>Login</button>
+    <button class="pay-btn" on:click={handlePayment}>Pay</button>
   </header>
 
   <div class="add-task-section">
@@ -177,6 +199,22 @@
 
   .auth-btn:hover {
     background-color: #5e35b1;
+  }
+
+  .pay-btn {
+    padding: 8px 16px;
+    background-color: #43a047;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+
+  .pay-btn:hover {
+    background-color: #2e7d32;
   }
 
   .add-btn:hover:not(:disabled) {
